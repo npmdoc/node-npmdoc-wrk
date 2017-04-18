@@ -1,0 +1,427 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+        href="https://github.com/sidorares/node-wrk"
+
+    >wrk (v1.1.0)</a>
+</h1>
+<h4>wrk load test tool wrapper and output parser</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.wrk">module wrk</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.wrk.wrk">
+            function <span class="apidocSignatureSpan"></span>wrk
+            <span class="apidocSignatureSpan">(opts, callback)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.wrk.co">
+            function <span class="apidocSignatureSpan">wrk.</span>co
+            <span class="apidocSignatureSpan">(opts)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.wrk.parseWrk">
+            function <span class="apidocSignatureSpan">wrk.</span>parseWrk
+            <span class="apidocSignatureSpan">(stdout)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.wrk.toString">
+            function <span class="apidocSignatureSpan">wrk.</span>toString
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.wrk.co">module wrk.co</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.wrk.co.co">
+            function <span class="apidocSignatureSpan">wrk.</span>co
+            <span class="apidocSignatureSpan">(opts)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.wrk.parseWrk">module wrk.parseWrk</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.wrk.parseWrk.parseWrk">
+            function <span class="apidocSignatureSpan">wrk.</span>parseWrk
+            <span class="apidocSignatureSpan">(stdout)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.wrk.toString">module wrk.toString</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.wrk.toString.toString">
+            function <span class="apidocSignatureSpan">wrk.</span>toString
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.wrk" id="apidoc.module.wrk">module wrk</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.wrk.wrk" id="apidoc.element.wrk.wrk">
+        function <span class="apidocSignatureSpan"></span>wrk
+        <span class="apidocSignatureSpan">(opts, callback)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function wrk(opts, callback) {
+  var cmd = opts.path || &#x27;wrk&#x27;;
+
+  if (opts.threads)
+    cmd += &#x27; -t&#x27; + opts.threads;
+  if (opts.connections)
+    cmd += &#x27; -c&#x27; + opts.connections;
+  if (opts.duration)
+    cmd += &#x27; -d&#x27; + opts.duration;
+  if (opts.script)
+    cmd += &#x27; -s&#x27; + opts.script;
+  if (opts.timeout)
+    cmd += &#x27; --timeout &#x27; + opts.timeout;
+  if (opts.rate)
+    cmd += &#x27; -R&#x27; + opts.rate;
+  if (opts.printLatency)
+    cmd += &#x27; --latency &#x27;;
+  if (opts.headers) {
+    Object.keys(opts.headers).forEach(function(key) {
+      cmd += util.format(&#x27; -H  \&#x27;%s: %s\&#x27;&#x27;, key,  opts.headers[key]);
+    })
+  }
+
+  cmd += &#x27; &#x27; + opts.url;
+
+  var child = exec(cmd, function(error, stdout, stderr) {
+    if (opts.debug) {
+      console.log(&#x27;stdout:\n&#x27;, stdout);
+      console.log(&#x27;stderr:\n&#x27;, stderr);
+    }
+    if (error) {
+      return callback(error);
+    }
+
+    callback(null, parseWrk(stdout));
+  });
+
+  child.on(&#x27;close&#x27;, function(code, signal) {
+    if (code === null) {
+      return callback(new Error(&#x27;killed by signal: %s&#x27;, signal));
+    }
+
+    if (code !== 0) {
+      return callback(new Error(&#x27;died with exit code: %s&#x27;, code));
+    }
+  });
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.wrk.co" id="apidoc.element.wrk.co">
+        function <span class="apidocSignatureSpan">wrk.</span>co
+        <span class="apidocSignatureSpan">(opts)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">co = function (opts) {
+  return function(callback) {
+    wrk(opts, callback);
+  }
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.wrk.parseWrk" id="apidoc.element.wrk.parseWrk">
+        function <span class="apidocSignatureSpan">wrk.</span>parseWrk
+        <span class="apidocSignatureSpan">(stdout)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function parseWrk(stdout) {
+  var lines = stdout.split(&#x27;\n&#x27;);
+  var result = {};
+  result.transferPerSec = lines[lines.length - 2].split(&#x27;:&#x27;)[1].trim();
+  result.requestsPerSec = Number(lines[lines.length - 3].split(&#x27;:&#x27;)[1].trim());
+
+  var errorsLine = 0;
+  for (var i = 0; i &#x3c; lines.length; i++) {
+    if (handleErrors(lines[i], result)) {
+      errorsLine++;
+    }
+  }
+
+  var m = lines[lines.length - 4 - errorsLine].match(/(\d+) requests in ([0-9\.]+[A-Za-z]+), ([0-9\.]+[A-Za]+)/);
+  result.requestsTotal  = Number(m[1]);
+  result.durationActual = m[2];
+  result.transferTotal  = m[3];
+
+  var latencyMinMax   = lines[3].split(/[\t ]+/);
+  result.latencyAvg   = latencyMinMax[2];
+  result.latencyStdev = latencyMinMax[3];
+  result.latencyMax   = latencyMinMax[4];
+  result.latencyStdevPerc  = Number(latencyMinMax[5].slice(0,-1));
+  var rpsMinMax   = lines[4].split(/[\t ]+/);
+  result.rpsAvg   = rpsMinMax[2];
+  result.rpsStdev = rpsMinMax[3];
+  result.rpsMax   = rpsMinMax[4];
+  result.rpsStdevPerc  = Number(rpsMinMax[5].slice(0,-1));
+
+  if (lines[5].match(/Latency Distribution/)) {
+    result.latency50 = lines[6].split(/[\t ]+/)[2];
+    result.latency75 = lines[7].split(/[\t ]+/)[2];
+    result.latency90 = lines[8].split(/[\t ]+/)[2];
+    result.latency99 = lines[9].split(/[\t ]+/)[2];
+  }
+
+  var histogram = [];
+  for (var i=0; i &#x3c; lines.length; ++i) {
+    if (lines[i].match(/Detailed Percentile spectrum:/) &#x26;&#x26; i &#x3c; lines.length - 3) {
+      for (var l=i+4; lines[l] != &#x27;&#x27;; ++l) {
+        var nums = lines[l].trim().split(/[ \t]+/);
+        if (nums.length != 4) break;
+        console.log(&#x27;Histo: &#x27;, nums);
+        histogram.push({
+          latency: Number(nums[0]),
+          percentile: Number(nums[1]),
+          total: Number(nums[2])
+        });
+      }
+      break;
+    }
+  }
+  if (histogram.length) {
+    result.histogram = histogram;
+  }
+  return result;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.wrk.toString" id="apidoc.element.wrk.toString">
+        function <span class="apidocSignatureSpan">wrk.</span>toString
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">toString = function () {
+    return text;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.wrk.co" id="apidoc.module.wrk.co">module wrk.co</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.wrk.co.co" id="apidoc.element.wrk.co.co">
+        function <span class="apidocSignatureSpan">wrk.</span>co
+        <span class="apidocSignatureSpan">(opts)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">co = function (opts) {
+  return function(callback) {
+    wrk(opts, callback);
+  }
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.wrk.parseWrk" id="apidoc.module.wrk.parseWrk">module wrk.parseWrk</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.wrk.parseWrk.parseWrk" id="apidoc.element.wrk.parseWrk.parseWrk">
+        function <span class="apidocSignatureSpan">wrk.</span>parseWrk
+        <span class="apidocSignatureSpan">(stdout)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function parseWrk(stdout) {
+  var lines = stdout.split(&#x27;\n&#x27;);
+  var result = {};
+  result.transferPerSec = lines[lines.length - 2].split(&#x27;:&#x27;)[1].trim();
+  result.requestsPerSec = Number(lines[lines.length - 3].split(&#x27;:&#x27;)[1].trim());
+
+  var errorsLine = 0;
+  for (var i = 0; i &#x3c; lines.length; i++) {
+    if (handleErrors(lines[i], result)) {
+      errorsLine++;
+    }
+  }
+
+  var m = lines[lines.length - 4 - errorsLine].match(/(\d+) requests in ([0-9\.]+[A-Za-z]+), ([0-9\.]+[A-Za]+)/);
+  result.requestsTotal  = Number(m[1]);
+  result.durationActual = m[2];
+  result.transferTotal  = m[3];
+
+  var latencyMinMax   = lines[3].split(/[\t ]+/);
+  result.latencyAvg   = latencyMinMax[2];
+  result.latencyStdev = latencyMinMax[3];
+  result.latencyMax   = latencyMinMax[4];
+  result.latencyStdevPerc  = Number(latencyMinMax[5].slice(0,-1));
+  var rpsMinMax   = lines[4].split(/[\t ]+/);
+  result.rpsAvg   = rpsMinMax[2];
+  result.rpsStdev = rpsMinMax[3];
+  result.rpsMax   = rpsMinMax[4];
+  result.rpsStdevPerc  = Number(rpsMinMax[5].slice(0,-1));
+
+  if (lines[5].match(/Latency Distribution/)) {
+    result.latency50 = lines[6].split(/[\t ]+/)[2];
+    result.latency75 = lines[7].split(/[\t ]+/)[2];
+    result.latency90 = lines[8].split(/[\t ]+/)[2];
+    result.latency99 = lines[9].split(/[\t ]+/)[2];
+  }
+
+  var histogram = [];
+  for (var i=0; i &#x3c; lines.length; ++i) {
+    if (lines[i].match(/Detailed Percentile spectrum:/) &#x26;&#x26; i &#x3c; lines.length - 3) {
+      for (var l=i+4; lines[l] != &#x27;&#x27;; ++l) {
+        var nums = lines[l].trim().split(/[ \t]+/);
+        if (nums.length != 4) break;
+        console.log(&#x27;Histo: &#x27;, nums);
+        histogram.push({
+          latency: Number(nums[0]),
+          percentile: Number(nums[1]),
+          total: Number(nums[2])
+        });
+      }
+      break;
+    }
+  }
+  if (histogram.length) {
+    result.histogram = histogram;
+  }
+  return result;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.wrk.toString" id="apidoc.module.wrk.toString">module wrk.toString</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.wrk.toString.toString" id="apidoc.element.wrk.toString.toString">
+        function <span class="apidocSignatureSpan">wrk.</span>toString
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function toString() { [native code] }</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
